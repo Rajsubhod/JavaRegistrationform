@@ -40,5 +40,46 @@ public class UserDao {
 		
 		return flag;
 	}
+    
+    public static User checkUserFromDb(User user) {
+		
+		User u = new User(-1,"","","");
+		try {
+			
+			//jdbc code 
+			Connection con = CP.createC();			
+			String sql = "SELECT * FROM users WHERE email = ? AND password = ?;";
+			
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			
+			//set the value of parameters
+			pstmt.setString(1, user.getUserEmail());
+			pstmt.setString(2, user.getUserPassword());
+			
+			//execute quary
+                        
+                        ResultSet res = pstmt.executeQuery();
+                        
+			if (res.next()) {				
+                            int id = res.getInt(1);
+                            String userEmail   = res.getString(2);
+                            String userName = res.getString(3);
+                            String userPassword  = res.getString(4);
+                            u = new User(id,userName,userEmail,userPassword);
+                        }
+                        else{
+                            System.out.println("Invalid email or password.");
+                        }
+			
+                        res.close();
+			pstmt.close();
+			con.close();
+		}
+		catch(SQLException e) {
+			System.out.println(e);
+		}
+		
+		return u;
+	}
 
 }
